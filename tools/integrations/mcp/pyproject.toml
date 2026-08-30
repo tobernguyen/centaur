@@ -1,0 +1,34 @@
+[project]
+name = "mcp"
+description = "Bridge to configured MCP servers: discover any server's tools at call time and call them"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.27.0",
+    "typer>=0.12.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.scripts]
+mcp = "centaur_tool_mcp.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[tool.hatch.build.targets.wheel.sources]
+"." = "centaur_tool_mcp"
+
+[tool.centaur]
+module = "client.py"
+# The tool is host-generic: any registry entry works if the sandbox proxy can
+# reach its host. List the host(s) your CENTAUR_MCP_SERVERS entries live on.
+hosts = ["mcp-gateway.internal.example"]
+# No secret on purpose: iron-proxy injects credentials on host+path from the
+# operator-configured static secrets, so the sandbox never holds a token and
+# this tool never sends an Authorization header. Declaring a secret here would
+# register a second injection rule racing the operator-configured one.
+secrets = []
